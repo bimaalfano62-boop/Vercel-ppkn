@@ -20,4 +20,4 @@ module.exports = async (req, res) => {
     await db("HSET", "hasil", id, JSON.stringify({ id, nama, kelas, skor, dominan, waktu: Date.now() }));
     res.status(200).json({ ok: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
-};
+}; 
