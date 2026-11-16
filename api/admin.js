@@ -3,7 +3,8 @@ const db = require("./_db");
 const h = s => crypto.createHash("sha256").update(String(s)).digest();
 module.exports = async (req, res) => {
   const pw = process.env.ADMIN_PASSWORD;
-  if (!pw || !crypto.timingSafeEqual(h(req.headers["x-admin-password"] || ""), h(pw)))
+  if (!pw) return res.status(500).json({ error: "ADMIN_PASSWORD belum diatur di Vercel (Settings > Environment Variables). Tambahkan lalu Redeploy." });
+  if (!crypto.timingSafeEqual(h(req.headers["x-admin-password"] || ""), h(pw)))
     return res.status(401).json({ error: "Password salah" });
   try {
     if (req.method === "DELETE") {
