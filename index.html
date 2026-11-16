@@ -71,6 +71,23 @@ input:focus{outline:3px solid var(--ac);outline-offset:1px;border-color:transpar
 .bar{margin:14px 0}.bl{display:flex;justify-content:space-between;font-size:15px}
 .tr{height:16px;background:var(--ln);border-radius:9px;overflow:hidden;margin-top:4px}.tr i{display:block;height:100%;border-radius:9px}
 .sec h2{font-size:24px;margin:0 0 8px}.sec p{margin:0 0 10px}
+/* Tombol data pojok kanan bawah + panel data (admin) */
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:20;width:54px;height:54px;border-radius:50%;background:var(--ink);color:var(--bg);border:0;cursor:pointer;font-size:24px;line-height:1;display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,0,0,.28);transition:transform .2s}
+.fab:hover{transform:scale(1.1) rotate(-8deg)}
+.fab:focus-visible{outline:3px solid var(--ac);outline-offset:3px}
+.ov{position:fixed;inset:0;z-index:30;background:rgba(16,12,44,.55);backdrop-filter:blur(4px);display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 12px calc(18px + env(safe-area-inset-bottom))}
+.ov.on{display:block}
+.panel{max-width:920px;margin:0 auto;background:var(--bg);border:2px solid var(--ln);border-radius:24px;padding:18px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.pbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px}
+.pbar h2{font-size:22px}
+.pclose{flex:none;width:40px;height:40px;border-radius:50%;background:var(--card);border:2px solid var(--ln);color:var(--ink);font:800 16px Figtree,sans-serif;cursor:pointer}
+.pclose:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#adm .card{margin:0 0 14px;border-radius:18px;padding:16px}
+#adm input,#adm select,#adm button{font:inherit;padding:10px 14px;border-radius:12px;border:2px solid var(--ln);background:var(--bg);color:var(--ink)}
+#adm button{cursor:pointer;font-weight:600}#adm .p{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#adm table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}#adm th,#adm td{padding:8px 6px;border-bottom:1px solid var(--ln);text-align:left}
+#adm .sc{overflow-x:auto}#adm .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}#adm .st{flex:1;min-width:120px}#adm .st b{font-size:26px;display:block}#adm .mu{color:var(--mu)}#adm h2{margin:0 0 10px;font-size:18px}
+@media(max-width:520px){.ov{padding:10px 6px calc(10px + env(safe-area-inset-bottom))}.panel{padding:14px;border-radius:18px}}
 </style>
 </head>
 <body>
@@ -82,6 +99,13 @@ input:focus{outline:3px solid var(--ac);outline-offset:1px;border-color:transpar
 <canvas id="cf" aria-hidden="true"></canvas>
 <div class="bar0"><span>🇮🇩 Tes Pancasila</span><button class="mus" id="mus" aria-label="Nyalakan atau matikan musik">🔇 Musik mati</button></div>
 <main id="app"></main>
+<button class="fab" id="fab" title="Lihat data kuisioner" aria-label="Lihat data kuisioner (admin)">📊</button>
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-label="Data kuisioner">
+ <div class="panel">
+  <div class="pbar"><h2>📊 Data Kuisioner</h2><button class="pclose" id="pclose" aria-label="Tutup panel data">✕</button></div>
+  <div id="adm"></div>
+ </div>
+</div>
 <script src="sila.js"></script>
 <script src="bank.js"></script>
 <script>
@@ -160,7 +184,7 @@ function choose(v,b,e){if(lock)return;lock=true;const id=order[pg];ans[id]=v;
  app.querySelectorAll(".op").forEach(x=>x.classList.toggle("dim",x!==b));b.classList.add("on");
  const r=b.getBoundingClientRect();burst(e&&e.clientX?e.clientX:r.left+r.width/2,e&&e.clientY?e.clientY:r.top+r.height/2,getComputedStyle(b).getPropertyValue("--c"));
  setTimeout(()=>{pg<N-1?(pg++,quiz()):finish()},560)}
-addEventListener("keydown",e=>{const o=app.querySelectorAll(".op");if(!o.length||lock)return;
+addEventListener("keydown",e=>{if(ov.classList.contains("on"))return;const o=app.querySelectorAll(".op");if(!o.length||lock)return;
  const i="abcde".indexOf(e.key.toLowerCase());if(i>=0&&e.key.length===1)o[i].click();
  else if((e.key==="ArrowLeft"||e.key==="Backspace")&&pg>0&&document.activeElement.tagName!=="INPUT"){pg--;quiz()}});
 const LV=v=>v>=70?"Tinggi":v>=40?"Sedang":"Rendah";
@@ -197,6 +221,61 @@ function show(skor,d,saved){
  re.onclick=()=>{document.documentElement.style.removeProperty("--hero");document.documentElement.style.removeProperty("--hi");me={nama:"",kelas:""};order=pick();ans={};intro()};
 }
 intro();
+
+// ===== Panel data kuisioner (tombol pojok kanan bawah, khusus guru) =====
+const fab=document.getElementById("fab"),ov=document.getElementById("ov"),adm=document.getElementById("adm");
+let apw=sessionStorage.getItem("pw")||"",arows=[],aflt="",aq="",aopen="";
+async function aapi(m="GET",q=""){
+ let r;try{r=await fetch("/api/admin"+q,{method:m,headers:{"x-admin-password":apw}})}catch(e){throw new Error("Tidak bisa terhubung ke server. Buka lewat alamat Vercel-mu, bukan dari file di komputer.")}
+ let j=null;try{j=await r.json()}catch(e){}
+ if(!r.ok)throw new Error((j&&j.error)||(r.status===404?"Server belum aktif (API tidak ditemukan). Pastikan folder api/ ikut ter-deploy.":"Gagal ("+r.status+")"));
+ return j}
+function alogin(e=""){
+ adm.innerHTML=`<div class="card" style="max-width:380px;margin:6vh auto"><h2>Masuk admin</h2><form id="a-lf" autocomplete="on">
+ <label for="a-pw" class="mu">Password admin</label>
+ <input id="a-pw" name="password" type="password" autocomplete="current-password" placeholder="Ketik password admin" style="width:100%;margin-top:6px" required>
+ <label class="mu" style="display:flex;gap:8px;align-items:center;margin:10px 0"><input type="checkbox" id="a-sh" style="width:auto"> Tampilkan password</label>
+ <p style="color:#e63946;min-height:22px;margin:0 0 10px" role="alert" id="a-er">${esc(e)}</p>
+ <button class="p" id="a-sb" type="submit">Masuk</button></form>
+ <p class="mu" style="font-size:13px;margin:14px 0 0">Password ini sama dengan variabel <b>ADMIN_PASSWORD</b> yang kamu atur di Vercel.</p></div>`;
+ const f=document.getElementById("a-lf"),i=document.getElementById("a-pw"),sb=document.getElementById("a-sb");
+ i.focus();
+ document.getElementById("a-sh").onchange=ev=>{i.type=ev.target.checked?"text":"password"};
+ f.onsubmit=async ev=>{ev.preventDefault();apw=i.value;sb.disabled=true;sb.textContent="Memeriksa…";
+  try{arows=(await aapi()).rows;sessionStorage.setItem("pw",apw);adash()}catch(x){apw="";alogin(x.message)}};
+}
+function adash(){
+ const ks=[...new Set(arows.map(r=>r.kelas))].sort(),R=arows.filter(r=>(!aflt||r.kelas===aflt)&&r.nama.toLowerCase().includes(aq.toLowerCase()));
+ const KL=ks.map(k=>{const g=arows.filter(r=>r.kelas===k);return `<tr><td>${esc(k)}</td><td>${g.length}</td>${[0,1,2,3,4].map(i=>`<td>${Math.round(g.reduce((a,r)=>a+r.skor[i],0)/g.length)}</td>`).join("")}</tr>`}).join("");
+ const avg=[0,1,2,3,4].map(i=>R.length?Math.round(R.reduce((a,r)=>a+r.skor[i],0)/R.length):0);
+ const cnt=[0,0,0,0,0];R.forEach(r=>r.dominan.forEach(i=>cnt[i]++));const top=R.length?cnt.indexOf(Math.max(...cnt)):-1;
+ const cb=cnt.map(v=>R.length?Math.round(v/R.length*100):0);
+ adm.innerHTML=`<div class="row" style="justify-content:space-between;margin:0 0 14px"><span class="mu">${R.length} responden ditampilkan</span><button id="a-out">Keluar</button></div>
+ <div class="card row"><input id="a-s" placeholder="Cari nama peserta" value="${esc(aq)}" aria-label="Cari nama"><select id="a-f" aria-label="Filter kelas"><option value="">Semua kelas</option>${ks.map(k=>`<option ${k===aflt?"selected":""}>${esc(k)}</option>`).join("")}</select><button id="a-rf">Muat ulang</button><button class="p" id="a-csv">Unduh CSV</button></div>
+ <div class="card row"><div class="st"><b>${R.length}</b>Responden</div><div class="st"><b>${top>=0?SILA[top].n:"-"}</b>Paling dominan</div></div>
+ <div class="card"><h2>Rata-rata skor per sila</h2>${bars(avg)}</div>
+ <div class="card"><h2>Persentase responden per sila dominan</h2>${bars(cb)}</div>
+ <div class="card sc"><h2>Ringkasan per kelas (rata-rata skor)</h2><table style="min-width:0"><tr><th>Kelas</th><th>Peserta</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th></tr>${KL||'<tr><td colspan="7" class="mu">Belum ada data.</td></tr>'}</table></div>
+ <div class="card sc"><h2>Data peserta (klik baris untuk detail)</h2><table><tr><th>Nama</th><th>Kelas</th><th>Tipe</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th><th>Waktu</th><th></th></tr>
+ ${R.map(r=>`<tr data-r="${r.id}" style="cursor:pointer"><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${tipe(r.dominan,r.skor).kode}</td>${r.skor.map(x=>`<td>${x}</td>`).join("")}<td>${new Date(r.waktu).toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"})}</td><td><button data-d="${r.id}" aria-label="Hapus ${esc(r.nama)}">Hapus</button></td></tr>${aopen===r.id?`<tr><td colspan="10"><b>${esc(tipe(r.dominan,r.skor).nama)}</b> (${tipe(r.dominan,r.skor).kode})<br>Sila dominan: ${r.dominan.map(i=>SILA[i].n+" – "+SILA[i].t).join("; ")}<br>Urutan skor: ${r.skor.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).map(([v,i])=>SILA[i].n+" "+v+"%").join(" > ")}<br>Diisi: ${new Date(r.waktu).toLocaleString("id-ID",{dateStyle:"full",timeStyle:"short"})}</td></tr>`:""}`).join("")||'<tr><td colspan="10" class="mu">Belum ada data.</td></tr>'}</table></div>`;
+ const f=document.getElementById("a-f"),s=document.getElementById("a-s"),out=document.getElementById("a-out"),rf=document.getElementById("a-rf"),csv=document.getElementById("a-csv");
+ f.onchange=()=>{aflt=f.value;adash()};
+ s.oninput=()=>{aq=s.value;adash();const e=document.getElementById("a-s");e.focus();e.setSelectionRange(aq.length,aq.length)};
+ adm.querySelectorAll("[data-r]").forEach(t=>t.onclick=e=>{if(e.target.closest("button"))return;aopen=aopen===t.dataset.r?"":t.dataset.r;adash()});
+ out.onclick=()=>{sessionStorage.removeItem("pw");apw="";alogin()};
+ rf.onclick=async()=>{try{arows=(await aapi()).rows;adash()}catch(x){apw="";alogin(x.message)}};
+ csv.onclick=()=>{const c=["Nama,Kelas,Tipe,Nama Tipe,S1,S2,S3,S4,S5,Waktu",...R.map(r=>{const t=tipe(r.dominan,r.skor);return[r.nama,r.kelas,t.kode,t.nama,...r.skor,new Date(r.waktu).toLocaleString("id-ID")].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")})].join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+c],{type:"text/csv"}));a.download="hasil-tes-pancasila.csv";a.click()};
+ adm.querySelectorAll("[data-d]").forEach(x=>x.onclick=async()=>{if(confirm("Hapus data ini?")){try{await aapi("DELETE","?id="+x.dataset.d)}catch(e){}arows=arows.filter(r=>r.id!==x.dataset.d);adash()}});
+}
+function openPanel(){ov.classList.add("on");document.body.style.overflow="hidden";
+ if(apw){aapi().then(d=>{arows=d.rows;adash()}).catch(x=>{apw="";alogin(x.message)})}
+ else alogin()}
+function closePanel(){ov.classList.remove("on");document.body.style.overflow=""}
+fab.onclick=openPanel;
+document.getElementById("pclose").onclick=closePanel;
+ov.onclick=e=>{if(e.target===ov)closePanel()};
+addEventListener("keydown",e=>{if(e.key==="Escape"&&ov.classList.contains("on"))closePanel()});
 </script>
 </body>
-</html>
+</html> 
