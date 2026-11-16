@@ -7,4 +7,4 @@ module.exports = async (...cmd) => {
   const j = await r.json();
   if (j.error) throw new Error(j.error);
   return j.result;
-};
+}; 
