@@ -15,9 +15,25 @@ table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}th,td{p
 <script src="sila.js"></script>
 <script>
 const app=document.getElementById("app");let pw=sessionStorage.getItem("pw")||"",rows=[],flt="",q="",open_="";
-async function api(m="GET",q=""){const r=await fetch("/api/admin"+q,{method:m,headers:{"x-admin-password":pw}});if(!r.ok)throw new Error((await r.json()).error||"Gagal");return r.json()}
-function login(e=""){app.innerHTML=`<div class="card" style="max-width:380px;margin:12vh auto"><h2>Masuk admin</h2><input id="p" type="password" placeholder="Password admin" style="width:100%" aria-label="Password admin"><p style="color:#e63946;min-height:22px" role="alert">${e}</p><button class="p" id="b">Masuk</button></div>`;
- b.onclick=async()=>{pw=p.value;try{rows=(await api()).rows;sessionStorage.setItem("pw",pw);dash()}catch(x){login(x.message)}};p.onkeydown=e=>e.key==="Enter"&&b.click()}
+async function api(m="GET",q=""){
+ let r;try{r=await fetch("/api/admin"+q,{method:m,headers:{"x-admin-password":pw}})}catch(e){throw new Error("Tidak bisa terhubung ke server. Buka lewat alamat Vercel-mu, bukan dari file di komputer.")}
+ let j=null;try{j=await r.json()}catch(e){}
+ if(!r.ok)throw new Error((j&&j.error)||(r.status===404?"Server belum aktif (API tidak ditemukan). Pastikan folder api/ ikut ter-deploy.":"Gagal ("+r.status+")"));
+ return j}
+function login(e=""){
+ app.innerHTML=`<form class="card" id="lf" style="max-width:380px;margin:12vh auto" autocomplete="on"><h2>Masuk admin</h2>
+ <label for="pw" class="mu">Password admin</label>
+ <input id="pw" name="password" type="password" autocomplete="current-password" placeholder="Ketik password admin" style="width:100%;margin-top:6px" required>
+ <label class="mu" style="display:flex;gap:8px;align-items:center;margin:10px 0"><input type="checkbox" id="sh" style="width:auto"> Tampilkan password</label>
+ <p style="color:#e63946;min-height:22px;margin:0 0 10px" role="alert" id="er">${esc(e)}</p>
+ <button class="p" id="sb" type="submit">Masuk</button>
+ <p class="mu" style="font-size:13px;margin:14px 0 0">Password ini sama dengan variabel <b>ADMIN_PASSWORD</b> yang kamu atur di Vercel.</p></form>`;
+ const f=document.getElementById("lf"),i=document.getElementById("pw"),sb=document.getElementById("sb");
+ i.focus();
+ document.getElementById("sh").onchange=ev=>{i.type=ev.target.checked?"text":"password"};
+ f.onsubmit=async ev=>{ev.preventDefault();pw=i.value;sb.disabled=true;sb.textContent="Memeriksa…";
+  try{rows=(await api()).rows;sessionStorage.setItem("pw",pw);dash()}catch(x){login(x.message)}};
+}
 function dash(){
  const ks=[...new Set(rows.map(r=>r.kelas))].sort(),R=rows.filter(r=>(!flt||r.kelas===flt)&&r.nama.toLowerCase().includes(q.toLowerCase()));
  const KL=ks.map(k=>{const g=rows.filter(r=>r.kelas===k);return `<tr><td>${esc(k)}</td><td>${g.length}</td>${[0,1,2,3,4].map(i=>`<td>${Math.round(g.reduce((a,r)=>a+r.skor[i],0)/g.length)}</td>`).join("")}</tr>`}).join("");
