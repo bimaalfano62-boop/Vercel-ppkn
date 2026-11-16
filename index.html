@@ -71,23 +71,26 @@ input:focus{outline:3px solid var(--ac);outline-offset:1px;border-color:transpar
 .bar{margin:14px 0}.bl{display:flex;justify-content:space-between;font-size:15px}
 .tr{height:16px;background:var(--ln);border-radius:9px;overflow:hidden;margin-top:4px}.tr i{display:block;height:100%;border-radius:9px}
 .sec h2{font-size:24px;margin:0 0 8px}.sec p{margin:0 0 10px}
-/* Tombol data pojok kanan bawah + panel data (admin) */
-.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:20;width:54px;height:54px;border-radius:50%;background:var(--ink);color:var(--bg);border:0;cursor:pointer;font-size:24px;line-height:1;display:grid;place-items:center;box-shadow:0 8px 20px rgba(0,0,0,.28);transition:transform .2s}
-.fab:hover{transform:scale(1.1) rotate(-8deg)}
-.fab:focus-visible{outline:3px solid var(--ac);outline-offset:3px}
-.ov{position:fixed;inset:0;z-index:30;background:rgba(16,12,44,.55);backdrop-filter:blur(4px);display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 12px calc(18px + env(safe-area-inset-bottom))}
-.ov.on{display:block}
-.panel{max-width:920px;margin:0 auto;background:var(--bg);border:2px solid var(--ln);border-radius:24px;padding:18px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
-.pbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px}
-.pbar h2{font-size:22px}
-.pclose{flex:none;width:40px;height:40px;border-radius:50%;background:var(--card);border:2px solid var(--ln);color:var(--ink);font:800 16px Figtree,sans-serif;cursor:pointer}
-.pclose:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-#adm .card{margin:0 0 14px;border-radius:18px;padding:16px}
-#adm input,#adm select,#adm button{font:inherit;padding:10px 14px;border-radius:12px;border:2px solid var(--ln);background:var(--bg);color:var(--ink)}
-#adm button{cursor:pointer;font-weight:600}#adm .p{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-#adm table{border-collapse:collapse;width:100%;font-size:14px;min-width:620px}#adm th,#adm td{padding:8px 6px;border-bottom:1px solid var(--ln);text-align:left}
-#adm .sc{overflow-x:auto}#adm .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}#adm .st{flex:1;min-width:120px}#adm .st b{font-size:26px;display:block}#adm .mu{color:var(--mu)}#adm h2{margin:0 0 10px;font-size:18px}
-@media(max-width:520px){.ov{padding:10px 6px calc(10px + env(safe-area-inset-bottom))}.panel{padding:14px;border-radius:18px}}
+/* Selektor lagu & latar (pojok kanan atas) */
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.sel{font:600 14px Figtree,sans-serif;background:var(--card);color:var(--ink);border:2px solid var(--ln);border-radius:999px;padding:7px 12px;cursor:pointer;-webkit-appearance:none;appearance:none}
+.sel:focus-visible,.mus:focus-visible{outline:3px solid var(--ac);outline-offset:3px}
+@media(max-width:560px){.bar0 span{font-size:15px}.sel{font-size:13px;padding:6px 9px}.mus{font-size:13px;padding:6px 10px}}
+/* Latar partikel */
+#amb{position:fixed;inset:0;pointer-events:none;z-index:2}
+/* Tema latar */
+html[data-theme=sakura]{--h:338;--bg:#fff2f7;--card:#fff;--ink:#4d2338;--mu:#a4687f;--ln:#f3cddc;--ac:#e75480}
+html[data-theme=sakura] body{background:linear-gradient(160deg,#ffeef5,#ffdfec)}
+html[data-theme=neon]{--h:185;--bg:#0b0b1c;--card:#141430;--ink:#e9f6ff;--mu:#8fa2c7;--ln:#2b2b55;--ac:#22d3ee;color-scheme:dark}
+html[data-theme=neon] body{background:linear-gradient(180deg,#0a0a1a,#121230 55%,#1c1044)}
+html[data-theme=neon] body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(34,211,238,.08) 0 1px,transparent 1px 44px),repeating-linear-gradient(90deg,rgba(217,70,239,.08) 0 1px,transparent 1px 44px);-webkit-mask-image:linear-gradient(180deg,transparent,#000 45%);mask-image:linear-gradient(180deg,transparent,#000 45%)}
+html[data-theme=neon] .blob{opacity:.3}
+html[data-theme=nature]{--h:140;--bg:#f2fbf3;--card:#fff;--ink:#1f3d26;--mu:#5f8268;--ln:#d3e9d6;--ac:#34a853}
+html[data-theme=nature] body{background:linear-gradient(160deg,#f0faee,#ddf4e2)}
+html[data-theme=space]{--h:232;--bg:#0c1024;--card:#161c3a;--ink:#e7ebff;--mu:#98a1cc;--ln:#2e3560;--ac:#8ab4ff;color-scheme:dark}
+html[data-theme=space] body{background:linear-gradient(180deg,#0a0e22,#161238)}
+html[data-theme=space] .blob{opacity:.2}
+html[data-theme=sakura] input,html[data-theme=sakura] .sel,html[data-theme=sakura] .mus,html[data-theme=nature] input,html[data-theme=nature] .sel,html[data-theme=nature] .mus{background:var(--bg)}
 </style>
 </head>
 <body>
@@ -97,41 +100,73 @@ input:focus{outline:3px solid var(--ac);outline-offset:1px;border-color:transpar
  <div class="blob" style="--s:380px;--x:20%;--y:66%;--o:-50;--d:13s"></div>
 </div>
 <canvas id="cf" aria-hidden="true"></canvas>
-<div class="bar0"><span>🇮🇩 Tes Pancasila</span><button class="mus" id="mus" aria-label="Nyalakan atau matikan musik">🔇 Musik mati</button></div>
+<canvas id="amb" aria-hidden="true"></canvas>
+<div class="bar0"><span>🇮🇩 Tes Pancasila</span><div class="ctl"><select class="sel" id="gen" aria-label="Pilih genre lagu"><option value="pop">🎵 Pop</option><option value="hiphop">🎤 Hip Hop</option><option value="dangdut">🥁 Dangdut</option><option value="lofi">☕ Lo-fi</option><option value="edm">⚡ EDM</option></select><select class="sel" id="tem" aria-label="Pilih latar belakang"><option value="basic">🟣 Basic</option><option value="sakura">🌸 Sakura</option><option value="neon">🌃 Neon</option><option value="nature">🌿 Alam</option><option value="space">✨ Bintang</option></select><button class="mus" id="mus" aria-label="Nyalakan atau matikan musik">🔇 Musik mati</button></div></div>
 <main id="app"></main>
-<button class="fab" id="fab" title="Lihat data kuisioner" aria-label="Lihat data kuisioner (admin)">📊</button>
-<div class="ov" id="ov" role="dialog" aria-modal="true" aria-label="Data kuisioner">
- <div class="panel">
-  <div class="pbar"><h2>📊 Data Kuisioner</h2><button class="pclose" id="pclose" aria-label="Tutup panel data">✕</button></div>
-  <div id="adm"></div>
- </div>
-</div>
 <script src="sila.js"></script>
 <script src="bank.js"></script>
 <script>
-// ===== Pengaturan musik =====
-// Kosongkan MUSIC_URL untuk memakai musik ceria bawaan (dibuat langsung di browser).
-// Atau isi dengan file mp3 milikmu, mis. "/musik.mp3" (pastikan kamu punya hak/lisensinya).
-const MUSIC_URL="";
-const Music=(()=>{let ctx,master,timer,step=0,next=0,on=false,au=null;
- const CH=[[261.63,329.63,392],[196,246.94,392],[220,261.63,329.63],[174.61,220,261.63]],PE=[523.25,587.33,659.25,783.99,880];
- function tone(f,t,d,type,g){const o=ctx.createOscillator(),v=ctx.createGain();o.type=type;o.frequency.value=f;v.gain.setValueAtTime(0,t);v.gain.linearRampToValueAtTime(g,t+.01);v.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(v);v.connect(master);o.start(t);o.stop(t+d+.05)}
- function shk(t){const b=ctx.createBuffer(1,2205,44100),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=(Math.random()*2-1)*(1-i/a.length);const n=ctx.createBufferSource(),f=ctx.createBiquadFilter(),v=ctx.createGain();n.buffer=b;f.type="highpass";f.frequency.value=6000;v.gain.value=.05;n.connect(f);f.connect(v);v.connect(master);n.start(t)}
- function sched(){while(next<ctx.currentTime+.3){const s=step%32,ch=CH[Math.floor(s/8)%4],e=s%8;
-  if([0,3,4,6].includes(e))ch.forEach((f,i)=>tone(f,next+i*.012,.55,"triangle",.09));
-  if(e%4===0)tone(ch[0]/2,next,.4,"sine",.16);
-  if(e%2===1)shk(next);
-  if(e%2===0&&Math.random()<.5)tone(PE[Math.floor(Math.random()*5)],next,.5,"sine",.06);
-  next+=.268;step++}}
+// ===== Musik: generator 5 genre (dibuat langsung di browser, tanpa file mp3) =====
+const R=(a,b)=>a+Math.random()*(b-a),pickr=a=>a[Math.floor(Math.random()*a.length)];
+const NT={C3:130.81,F3:174.61,G3:196,A3:220,B3:246.94,C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392,A4:440,B4:493.88,C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99,A5:880};
+const GENRES={
+ pop:{bpm:116,kick:[0,4,8,12],clap:[4,12],hat:[2,6,10,14],bass:[0,4,8,12],chords:[0,3,6,10,12],chordType:"triangle",chordGain:.09,chordLen:1.6,scale:[NT.C4,NT.D4,NT.E4,NT.G4,NT.A4,NT.C5],melP:.4,leadType:"square",leadGain:.045,
+  prog:[[NT.C4,NT.E4,NT.G4],[NT.A3,NT.C4,NT.E4],[NT.F3,NT.A3,NT.C4],[NT.G3,NT.B3,NT.D4]]},
+ hiphop:{bpm:88,swing:.14,kick:[0,6,10,13],clap:[4,12],hat:[0,2,4,6,8,10,12,14],hatG:.13,bass:[0,6,10,13],chords:[0],chordType:"sine",chordGain:.08,chordLen:6,scale:[NT.A3,NT.C4,NT.D4,NT.E4,NT.G4,NT.A4],melP:.3,leadType:"triangle",leadGain:.08,
+  prog:[[NT.A3,NT.C4,NT.E4],[NT.F3,NT.A3,NT.C4],[NT.C4,NT.E4,NT.G4],[NT.G3,NT.B3,NT.D4]]},
+ dangdut:{bpm:106,kick:[0,8],clap:[4,12],hat:[4,12],tomL:[0,3,8,11],tomM:[6,10,13,15],bass:[0,3,6,8,11,14],chords:[0,8],chordType:"triangle",chordGain:.07,chordLen:2.5,scale:[NT.G4,NT.A4,NT.C5,NT.D5,NT.E5,NT.G5],melP:.45,leadType:"sine",leadGain:.09,bend:true,
+  prog:[[NT.A3,NT.C4,NT.E4],[NT.G3,NT.B3,NT.D4],[NT.F3,NT.A3,NT.C4],[NT.E3,NT.G3,NT.B3]]},
+ lofi:{bpm:76,kick:[0,7],clap:[4,12],hat:[2,6,10,14],hatG:.11,bass:[0,7,10],bassLen:2.6,ep:[0,8],epLen:7,scale:[NT.C4,NT.D4,NT.E4,NT.G4,NT.A4],melP:.22,leadType:"sine",leadGain:.06,crackle:true,
+  prog:[[NT.C4,NT.E4,NT.G4],[NT.A3,NT.C4,NT.E4],[NT.F3,NT.A3,NT.C4],[NT.G3,NT.B3,NT.D4]],
+  prog7:[[NT.C4,NT.E4,NT.G4,NT.B4],[NT.A3,NT.C4,NT.E4,NT.G4],[NT.F3,NT.A3,NT.C4,NT.E4],[NT.G3,NT.B3,NT.D4,NT.F4]]},
+ edm:{bpm:128,kick:[0,4,8,12],clap:[4,12],hat:[2,6,10,14],ohat:true,bass:[2,6,10,14],chords:[2,6,10,14],chordType:"sawtooth",chordGain:.045,chordLen:1.1,arp:true,scale:[NT.E4,NT.G4,NT.A4,NT.B4,NT.D5,NT.E5],melP:.32,leadType:"sawtooth",leadGain:.05,
+  prog:[[NT.A3,NT.C4,NT.E4],[NT.F3,NT.A3,NT.C4],[NT.C4,NT.E4,NT.G4],[NT.G3,NT.B3,NT.D4]]}};
+const Music=(()=>{let ctx,master,timer,step=0,next=0,on=false,nbuf=null,genre="pop";
+ const G=()=>GENRES[genre];
+ function ensure(){ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();ctx.resume();
+  if(!master){master=ctx.createGain();master.gain.value=0;master.connect(ctx.destination)}}
+ function nz(t,d,type,f,g){const n=ctx.createBufferSource();if(!nbuf){nbuf=ctx.createBuffer(1,44100,44100);const a=nbuf.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1}n.buffer=nbuf;
+  const fl=ctx.createBiquadFilter();fl.type=type;fl.frequency.value=f;const v=ctx.createGain();
+  v.gain.setValueAtTime(g,t);v.gain.exponentialRampToValueAtTime(.0001,t+d);n.connect(fl);fl.connect(v);v.connect(master);n.start(t);n.stop(t+d+.02)}
+ function tone(f,t,d,type,g){const o=ctx.createOscillator(),v=ctx.createGain();o.type=type;o.frequency.value=f;
+  v.gain.setValueAtTime(0,t);v.gain.linearRampToValueAtTime(g,t+.012);v.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(v);v.connect(master);o.start(t);o.stop(t+d+.05)}
+ function kick(t){const o=ctx.createOscillator(),v=ctx.createGain();o.type="sine";
+  o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(45,t+.13);
+  v.gain.setValueAtTime(.85,t);v.gain.exponentialRampToValueAtTime(.001,t+.24);o.connect(v);v.connect(master);o.start(t);o.stop(t+.3)}
+ function tom(t,f){const o=ctx.createOscillator(),v=ctx.createGain();o.type="sine";
+  o.frequency.setValueAtTime(f*1.7,t);o.frequency.exponentialRampToValueAtTime(f,t+.1);
+  v.gain.setValueAtTime(.5,t);v.gain.exponentialRampToValueAtTime(.001,t+.2);o.connect(v);v.connect(master);o.start(t);o.stop(t+.25)}
+ function bass(t,f,d){const o=ctx.createOscillator(),fl=ctx.createBiquadFilter(),v=ctx.createGain();o.type="sawtooth";o.frequency.value=f;
+  fl.type="lowpass";fl.frequency.value=320;v.gain.setValueAtTime(0,t);v.gain.linearRampToValueAtTime(.3,t+.02);v.gain.exponentialRampToValueAtTime(.001,t+d);
+  o.connect(fl);fl.connect(v);v.connect(master);o.start(t);o.stop(t+d+.05)}
+ function lead(t,f,d,type,g,bend){if(bend){tone(f*1.12,t,d*.12,"sine",g*.5);tone(f,t+.07,d*.8,type,g)}else tone(f,t,d,type,g)}
+ function sched(){const g=G(),spb=60/g.bpm/4;
+  while(next<ctx.currentTime+.4){const s=step%16,bar=Math.floor(step/16),ch=g.prog[bar%g.prog.length];
+   const t0=next+(s%2?(g.swing||0)*spb:0);
+   if(g.kick.includes(s))kick(t0);
+   if(g.clap.includes(s))nz(t0,.16,"bandpass",1700,.35);
+   if(g.hat.includes(s))nz(t0,g.ohat?.24:.06,"highpass",7800,g.hatG||.22);
+   if(g.tomL&&g.tomL.includes(s))tom(t0,95);
+   if(g.tomM&&g.tomM.includes(s))tom(t0,170);
+   if(g.bass.includes(s))bass(t0,ch[0]/2,spb*(g.bassLen||1.7));
+   if(g.chords&&g.chords.includes(s))ch.forEach(f=>tone(f,t0,spb*g.chordLen,g.chordType,g.chordGain));
+   if(g.ep&&g.ep.includes(s))g.prog7[bar%4].forEach(f=>{tone(f,t0,spb*g.epLen,"sine",.11);tone(f*2,t0,spb*g.epLen,"triangle",.025)});
+   if(g.arp&&Math.random()<.85)tone(ch[s%ch.length]*2,t0,spb*.9,g.chordType,g.chordGain*1.4);
+   if(Math.random()<g.melP)lead(t0,pickr(g.scale),spb*R(1.2,2.4),g.leadType,g.leadGain,g.bend);
+   if(g.crackle&&Math.random()<.4)nz(t0,.025,"highpass",4500,.035);
+   step++;next+=spb}}
  function btn(){mus.textContent=on?"🔊 Musik nyala":"🔇 Musik mati"}
- return{get on(){return on},
-  start(){if(on)return;on=true;btn();
-   if(MUSIC_URL){au=au||Object.assign(new Audio(MUSIC_URL),{loop:true,volume:.4});au.play().catch(()=>{});return}
-   ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();ctx.resume();
-   if(!master){master=ctx.createGain();master.connect(ctx.destination)}
-   master.gain.setTargetAtTime(.8,ctx.currentTime,.3);next=ctx.currentTime+.1;timer=setInterval(sched,100)},
-  stop(){if(!on)return;on=false;btn();if(au)au.pause();else{clearInterval(timer);master.gain.setTargetAtTime(0,ctx.currentTime,.1)}},
+ return{get on(){return on},get genre(){return genre},
+  setGenre(x){if(!GENRES[x])return;genre=x;localStorage.setItem("genre",x);
+   if(on){clearInterval(timer);step=0;next=ctx.currentTime+.05;timer=setInterval(sched,90)}},
+  start(){if(on)return;on=true;btn();ensure();
+   master.gain.setTargetAtTime(.8,ctx.currentTime,.3);next=ctx.currentTime+.1;step=0;timer=setInterval(sched,90)},
+  stop(){if(!on)return;on=false;btn();clearInterval(timer);master.gain.setTargetAtTime(0,ctx.currentTime,.1)},
   toggle(){on?this.stop():this.start()}}})();
+let genre0=localStorage.getItem("genre")||"pop";if(!GENRES[genre0])genre0="pop";
+Music.setGenre(genre0);gen.value=genre0;
+gen.onchange=()=>Music.setGenre(gen.value);
 mus.onclick=()=>Music.toggle();
 
 // ===== Efek: latar interaktif & confetti =====
@@ -147,6 +182,41 @@ function tick(){cx.clearRect(0,0,cf.width,cf.height);ps=ps.filter(p=>p.l>0);
  ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.98;p.l-=.02;p.rot+=.2;cx.globalAlpha=Math.max(p.l,0);cx.fillStyle=p.c;cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillRect(-p.r,-p.r/2,p.r*2,p.r);cx.restore()});
  raf=ps.length?requestAnimationFrame(tick):0}
 
+// ===== Latar: tema visual bisa dipilih =====
+const amb=document.getElementById("amb"),ax=amb.getContext("2d");let aps=[],ambRaf=0,curTheme="basic";
+function fitAmb(){amb.width=innerWidth;amb.height=innerHeight}fitAmb();addEventListener("resize",fitAmb);
+const THEMES={
+ sakura:{n:26,spawn:i=>({k:"petal",x:R(0,innerWidth),y:i?R(0,innerHeight):R(-40,-10),vx:R(-.3,.3),vy:R(.5,1.2),r:R(4,8),rot:R(0,6),vr:R(-.04,.04),c:pickr(["#ffb7c5","#ff9eb8","#ffd6e0"]),a:R(.55,.95),ph:R(0,6)})},
+ neon:{n:34,spawn:i=>({k:"glow",x:R(0,innerWidth),y:i?R(0,innerHeight):innerHeight+R(0,60),vy:R(.3,1),r:R(1.2,3),c:pickr(["#22d3ee","#e879f9","#818cf8","#34d399"]),a:R(.4,.9),ph:R(0,6)})},
+ nature:{n:22,spawn:i=>Math.random()<.6?{k:"petal",x:R(0,innerWidth),y:i?R(0,innerHeight):R(-30,-10),vx:R(-.4,.4),vy:R(.4,1),r:R(4,8),rot:R(0,6),vr:R(-.03,.03),c:pickr(["#86c99b","#5fae7c","#c9df9b"]),a:R(.4,.8),ph:R(0,6)}:{k:"glow",x:R(0,innerWidth),y:i?R(0,innerHeight):innerHeight+R(0,40),vy:R(.2,.5),r:R(1.5,2.8),c:"#ffe9a8",a:R(.35,.7),ph:R(0,6)}},
+ space:{n:70,spawn:i=>({k:"star",x:R(0,innerWidth),y:R(0,innerHeight),r:R(.6,1.8),ph:R(0,6),sp:R(.5,1.6)})},
+ basic:{n:0}};
+function ambTick(){ax.clearRect(0,0,amb.width,amb.height);const now=Date.now()/1000;
+ aps.forEach(p=>{
+  if(p.k==="petal"){p.x+=p.vx+Math.sin(now*1.3+p.ph)*.5;p.y+=p.vy;p.rot+=p.vr;
+   if(p.y>amb.height+24){p.y=-24;p.x=R(0,amb.width)}if(p.x<-24)p.x=amb.width+20;if(p.x>amb.width+24)p.x=-20;
+   ax.save();ax.translate(p.x,p.y);ax.rotate(p.rot);ax.globalAlpha=p.a;ax.fillStyle=p.c;
+   ax.beginPath();ax.ellipse(0,0,p.r,p.r*.6,0,0,7);ax.fill();ax.restore()}
+  else if(p.k==="glow"){p.y-=p.vy;p.x+=Math.sin(now+p.ph)*.3;if(p.y<-20){p.y=amb.height+20;p.x=R(0,amb.width)}
+   ax.globalAlpha=p.a*(.7+.3*Math.sin(now*2+p.ph));ax.shadowBlur=10;ax.shadowColor=p.c;ax.fillStyle=p.c;
+   ax.beginPath();ax.arc(p.x,p.y,p.r,0,7);ax.fill();ax.shadowBlur=0}
+  else if(p.k==="star"){ax.globalAlpha=.25+.75*Math.abs(Math.sin(now*p.sp+p.ph));ax.fillStyle="#fff";
+   ax.beginPath();ax.arc(p.x,p.y,p.r,0,7);ax.fill();
+   if(Math.random()<.0012)aps.push({k:"shoot",x:R(0,amb.width*.8),y:R(0,amb.height*.4),vx:R(5,8),vy:R(1.5,3),l:1})}
+  else if(p.k==="shoot"){p.x+=p.vx;p.y+=p.vy;p.l-=.02;ax.globalAlpha=Math.max(p.l,0);
+   ax.strokeStyle="#fff";ax.lineWidth=1.6;ax.beginPath();ax.moveTo(p.x,p.y);ax.lineTo(p.x-p.vx*9,p.y-p.vy*9);ax.stroke()}});
+ ax.globalAlpha=1;ambRaf=requestAnimationFrame(ambTick)}
+function setTheme(x){if(!(x in THEMES))x="basic";curTheme=x;localStorage.setItem("tema",x);
+ if(x==="basic")document.documentElement.removeAttribute("data-theme");
+ else document.documentElement.dataset.theme=x;
+ if(ambRaf)cancelAnimationFrame(ambRaf);ambRaf=0;aps=[];ax.clearRect(0,0,amb.width,amb.height);
+ const c=THEMES[x];if(!c.n||RM)return;
+ for(let i=0;i<c.n;i++)aps.push(c.spawn(i));
+ ambRaf=requestAnimationFrame(ambTick)}
+let tema0=localStorage.getItem("tema")||"basic";
+setTheme(tema0);tem.value=tema0;
+tem.onchange=()=>setTheme(tem.value);
+
 // ===== Tes =====
 const app=document.getElementById("app");
 const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
@@ -156,7 +226,7 @@ let order=pick(),ans={},pg=0,lock=false,me={nama:"",kelas:""};
 const N=order.length,txt=id=>BANK[Math.floor(id/25)][id%25],HUE=[45,355,215,262,150];
 const setH=h=>document.documentElement.style.setProperty("--h",h);
 
-function intro(err=""){setH(262);
+function intro(err=""){curTheme==="basic"?setH(262):document.documentElement.style.removeProperty("--h");
  app.innerHTML=`<div class="w stage"><div class="pad"></div>
  <div class="hero"><h1>Kamu condong ke sila yang mana?</h1>
  <p>25 pernyataan singkat yang diacak untukmu, dijawab satu per satu. Pilih A sampai E. Tidak ada jawaban benar atau salah, jadi jawab sesuai dirimu yang sebenarnya.</p>
@@ -164,14 +234,14 @@ function intro(err=""){setH(262);
  <div class="card"><label for="nm">Nama lengkap</label><input id="nm" autocomplete="name" value="${esc(me.nama)}" placeholder="Contoh: Budi Santoso">
  <label for="kl">Kelas</label><input id="kl" value="${esc(me.kelas)}" placeholder="Contoh: XI IPA 2">
  <div class="err" id="er" role="alert">${err}</div><button class="btn" id="go">Mulai tes 🎵</button>
- <p class="mu" style="margin:12px 0 0">Musik akan menyala saat tes dimulai. Matikan kapan saja di pojok kanan atas.</p></div></div>`;
+ <p class="mu" style="margin:12px 0 0">Musik & latar bisa diganti-ganti lewat selector di pojok kanan atas. Musik menyala saat tes dimulai dan bisa dimatikan kapan saja.</p></div></div>`;
  document.getElementById("go").onclick=()=>{const n=nm.value.trim(),k=kl.value.trim();
   if(n.length<2||!k)return intro("Isi nama dan kelas dulu sebelum mulai.");
   me={nama:n,kelas:k};pg=0;ans={};Music.start();quiz()};
 }
 const OP=[["A","Sangat sesuai denganku","😍","#ff6b6b"],["B","Sesuai denganku","🙂","#ffa31a"],["C","Netral, kadang-kadang","😐","#1fb5a5"],["D","Kurang sesuai denganku","🤔","#3aa8e8"],["E","Tidak sesuai denganku","🙅","#9b5de5"]];
 function quiz(){lock=false;
- const id=order[pg];setH((250+pg*17)%360);
+ const id=order[pg];if(curTheme==="basic")setH((250+pg*17)%360);
  app.innerHTML=`<div class="w stage"><div class="pad"></div>
  <div class="meter"><div class="pt"><i style="width:${(pg+1)/N*100}%"></i></div><span>${pg+1} / ${N}</span></div>
  <div class="qc"><div class="mw">${mascot(Math.floor(id/25),96)}</div><p class="qt">${esc(txt(id))}</p></div>
@@ -184,7 +254,7 @@ function choose(v,b,e){if(lock)return;lock=true;const id=order[pg];ans[id]=v;
  app.querySelectorAll(".op").forEach(x=>x.classList.toggle("dim",x!==b));b.classList.add("on");
  const r=b.getBoundingClientRect();burst(e&&e.clientX?e.clientX:r.left+r.width/2,e&&e.clientY?e.clientY:r.top+r.height/2,getComputedStyle(b).getPropertyValue("--c"));
  setTimeout(()=>{pg<N-1?(pg++,quiz()):finish()},560)}
-addEventListener("keydown",e=>{if(ov.classList.contains("on"))return;const o=app.querySelectorAll(".op");if(!o.length||lock)return;
+addEventListener("keydown",e=>{const o=app.querySelectorAll(".op");if(!o.length||lock)return;
  const i="abcde".indexOf(e.key.toLowerCase());if(i>=0&&e.key.length===1)o[i].click();
  else if((e.key==="ArrowLeft"||e.key==="Backspace")&&pg>0&&document.activeElement.tagName!=="INPUT"){pg--;quiz()}});
 const LV=v=>v>=70?"Tinggi":v>=40?"Sedang":"Rendah";
@@ -199,7 +269,7 @@ async function finish(){
 }
 function show(skor,d,saved){
  const T=tipe(d,skor),P=SILA[T.p],S=SILA[T.s];
- setH(HUE[T.p]);document.documentElement.style.setProperty("--hero",P.c);document.documentElement.style.setProperty("--hi",P.ink);
+ curTheme==="basic"?setH(HUE[T.p]):document.documentElement.style.removeProperty("--h");document.documentElement.style.setProperty("--hero",P.c);document.documentElement.style.setProperty("--hi",P.ink);
  // alasan: pernyataan sila dominan yang paling kamu setujui
  const top=order.filter(id=>Math.floor(id/25)===T.p).sort((a,b)=>ans[b]-ans[a]).slice(0,2);
  const rank=skor.map((v,i)=>i).sort((a,b)=>skor[b]-skor[a]);
@@ -222,60 +292,6 @@ function show(skor,d,saved){
 }
 intro();
 
-// ===== Panel data kuisioner (tombol pojok kanan bawah, khusus guru) =====
-const fab=document.getElementById("fab"),ov=document.getElementById("ov"),adm=document.getElementById("adm");
-let apw=sessionStorage.getItem("pw")||"",arows=[],aflt="",aq="",aopen="";
-async function aapi(m="GET",q=""){
- let r;try{r=await fetch("/api/admin"+q,{method:m,headers:{"x-admin-password":apw}})}catch(e){throw new Error("Tidak bisa terhubung ke server. Buka lewat alamat Vercel-mu, bukan dari file di komputer.")}
- let j=null;try{j=await r.json()}catch(e){}
- if(!r.ok)throw new Error((j&&j.error)||(r.status===404?"Server belum aktif (API tidak ditemukan). Pastikan folder api/ ikut ter-deploy.":"Gagal ("+r.status+")"));
- return j}
-function alogin(e=""){
- adm.innerHTML=`<div class="card" style="max-width:380px;margin:6vh auto"><h2>Masuk admin</h2><form id="a-lf" autocomplete="on">
- <label for="a-pw" class="mu">Password admin</label>
- <input id="a-pw" name="password" type="password" autocomplete="current-password" placeholder="Ketik password admin" style="width:100%;margin-top:6px" required>
- <label class="mu" style="display:flex;gap:8px;align-items:center;margin:10px 0"><input type="checkbox" id="a-sh" style="width:auto"> Tampilkan password</label>
- <p style="color:#e63946;min-height:22px;margin:0 0 10px" role="alert" id="a-er">${esc(e)}</p>
- <button class="p" id="a-sb" type="submit">Masuk</button></form>
- <p class="mu" style="font-size:13px;margin:14px 0 0">Password ini sama dengan variabel <b>ADMIN_PASSWORD</b> yang kamu atur di Vercel.</p></div>`;
- const f=document.getElementById("a-lf"),i=document.getElementById("a-pw"),sb=document.getElementById("a-sb");
- i.focus();
- document.getElementById("a-sh").onchange=ev=>{i.type=ev.target.checked?"text":"password"};
- f.onsubmit=async ev=>{ev.preventDefault();apw=i.value;sb.disabled=true;sb.textContent="Memeriksa…";
-  try{arows=(await aapi()).rows;sessionStorage.setItem("pw",apw);adash()}catch(x){apw="";alogin(x.message)}};
-}
-function adash(){
- const ks=[...new Set(arows.map(r=>r.kelas))].sort(),R=arows.filter(r=>(!aflt||r.kelas===aflt)&&r.nama.toLowerCase().includes(aq.toLowerCase()));
- const KL=ks.map(k=>{const g=arows.filter(r=>r.kelas===k);return `<tr><td>${esc(k)}</td><td>${g.length}</td>${[0,1,2,3,4].map(i=>`<td>${Math.round(g.reduce((a,r)=>a+r.skor[i],0)/g.length)}</td>`).join("")}</tr>`}).join("");
- const avg=[0,1,2,3,4].map(i=>R.length?Math.round(R.reduce((a,r)=>a+r.skor[i],0)/R.length):0);
- const cnt=[0,0,0,0,0];R.forEach(r=>r.dominan.forEach(i=>cnt[i]++));const top=R.length?cnt.indexOf(Math.max(...cnt)):-1;
- const cb=cnt.map(v=>R.length?Math.round(v/R.length*100):0);
- adm.innerHTML=`<div class="row" style="justify-content:space-between;margin:0 0 14px"><span class="mu">${R.length} responden ditampilkan</span><button id="a-out">Keluar</button></div>
- <div class="card row"><input id="a-s" placeholder="Cari nama peserta" value="${esc(aq)}" aria-label="Cari nama"><select id="a-f" aria-label="Filter kelas"><option value="">Semua kelas</option>${ks.map(k=>`<option ${k===aflt?"selected":""}>${esc(k)}</option>`).join("")}</select><button id="a-rf">Muat ulang</button><button class="p" id="a-csv">Unduh CSV</button></div>
- <div class="card row"><div class="st"><b>${R.length}</b>Responden</div><div class="st"><b>${top>=0?SILA[top].n:"-"}</b>Paling dominan</div></div>
- <div class="card"><h2>Rata-rata skor per sila</h2>${bars(avg)}</div>
- <div class="card"><h2>Persentase responden per sila dominan</h2>${bars(cb)}</div>
- <div class="card sc"><h2>Ringkasan per kelas (rata-rata skor)</h2><table style="min-width:0"><tr><th>Kelas</th><th>Peserta</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th></tr>${KL||'<tr><td colspan="7" class="mu">Belum ada data.</td></tr>'}</table></div>
- <div class="card sc"><h2>Data peserta (klik baris untuk detail)</h2><table><tr><th>Nama</th><th>Kelas</th><th>Tipe</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th><th>Waktu</th><th></th></tr>
- ${R.map(r=>`<tr data-r="${r.id}" style="cursor:pointer"><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${tipe(r.dominan,r.skor).kode}</td>${r.skor.map(x=>`<td>${x}</td>`).join("")}<td>${new Date(r.waktu).toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"})}</td><td><button data-d="${r.id}" aria-label="Hapus ${esc(r.nama)}">Hapus</button></td></tr>${aopen===r.id?`<tr><td colspan="10"><b>${esc(tipe(r.dominan,r.skor).nama)}</b> (${tipe(r.dominan,r.skor).kode})<br>Sila dominan: ${r.dominan.map(i=>SILA[i].n+" – "+SILA[i].t).join("; ")}<br>Urutan skor: ${r.skor.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).map(([v,i])=>SILA[i].n+" "+v+"%").join(" > ")}<br>Diisi: ${new Date(r.waktu).toLocaleString("id-ID",{dateStyle:"full",timeStyle:"short"})}</td></tr>`:""}`).join("")||'<tr><td colspan="10" class="mu">Belum ada data.</td></tr>'}</table></div>`;
- const f=document.getElementById("a-f"),s=document.getElementById("a-s"),out=document.getElementById("a-out"),rf=document.getElementById("a-rf"),csv=document.getElementById("a-csv");
- f.onchange=()=>{aflt=f.value;adash()};
- s.oninput=()=>{aq=s.value;adash();const e=document.getElementById("a-s");e.focus();e.setSelectionRange(aq.length,aq.length)};
- adm.querySelectorAll("[data-r]").forEach(t=>t.onclick=e=>{if(e.target.closest("button"))return;aopen=aopen===t.dataset.r?"":t.dataset.r;adash()});
- out.onclick=()=>{sessionStorage.removeItem("pw");apw="";alogin()};
- rf.onclick=async()=>{try{arows=(await aapi()).rows;adash()}catch(x){apw="";alogin(x.message)}};
- csv.onclick=()=>{const c=["Nama,Kelas,Tipe,Nama Tipe,S1,S2,S3,S4,S5,Waktu",...R.map(r=>{const t=tipe(r.dominan,r.skor);return[r.nama,r.kelas,t.kode,t.nama,...r.skor,new Date(r.waktu).toLocaleString("id-ID")].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")})].join("\n");
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+c],{type:"text/csv"}));a.download="hasil-tes-pancasila.csv";a.click()};
- adm.querySelectorAll("[data-d]").forEach(x=>x.onclick=async()=>{if(confirm("Hapus data ini?")){try{await aapi("DELETE","?id="+x.dataset.d)}catch(e){}arows=arows.filter(r=>r.id!==x.dataset.d);adash()}});
-}
-function openPanel(){ov.classList.add("on");document.body.style.overflow="hidden";
- if(apw){aapi().then(d=>{arows=d.rows;adash()}).catch(x=>{apw="";alogin(x.message)})}
- else alogin()}
-function closePanel(){ov.classList.remove("on");document.body.style.overflow=""}
-fab.onclick=openPanel;
-document.getElementById("pclose").onclick=closePanel;
-ov.onclick=e=>{if(e.target===ov)closePanel()};
-addEventListener("keydown",e=>{if(e.key==="Escape"&&ov.classList.contains("on"))closePanel()});
 </script>
 </body>
 </html> 
