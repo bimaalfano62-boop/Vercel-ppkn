@@ -263,8 +263,11 @@ async function finish(){
  jawab.forEach(([id,v])=>sum[Math.floor(id/25)]+=v-1);
  const skor=sum.map(v=>Math.round(v/20*100)),mx=Math.max(...skor),d=skor.map((v,i)=>v===mx?i:-1).filter(i=>i>=0);
  app.innerHTML='<div class="load">Menghitung hasilmu… 🎶</div>';
+ // simpan ke localStorage browser perangkat ini (tanpa database / server)
  let saved=true;
- try{const r=await fetch("/api/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...me,jawab})});saved=r.ok}catch(e){saved=false}
+ try{const all=JSON.parse(localStorage.getItem("hasil_ppkn")||"[]");
+  all.push({id:Date.now()+"-"+Math.random().toString(36).slice(2,8),nama:me.nama,kelas:me.kelas,skor,dominan:d,waktu:Date.now(),jawab});
+  localStorage.setItem("hasil_ppkn",JSON.stringify(all))}catch(e){saved=false}
  show(skor,d,saved);
 }
 function show(skor,d,saved){
@@ -285,7 +288,7 @@ function show(skor,d,saved){
  <p style="margin-top:12px"><b>Maknanya:</b> ${esc(SILA[i].makna)}</p>
  <p><b>Alasan:</b> ${esc(skor[i]>=70?SILA[i].hi:skor[i]>=40?SILA[i].mid:SILA[i].lo)}</p>
  <p style="margin-bottom:4px"><b>Saran:</b></p><ul style="margin:0 0 4px;padding-left:20px">${SILA[i].sr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
- <p class="mu" style="text-align:center">${saved?"Hasilmu sudah terkirim ke guru.":"Hasil belum tersimpan di server. Coba ulangi tes nanti."}</p>
+ <p class="mu" style="text-align:center">${saved?"Hasilmu sudah tersimpan di perangkat ini — screenshot buat bukti ke gurumu.":"Hasil belum bisa disimpan (penyimpanan browser penuh?). Coba ulangi tes nanti."}</p>
  <div style="text-align:center;padding-bottom:50px"><button class="btn" id="re">Ulangi tes</button></div></div>`;
  scrollTo(0,0);if(!RM)burst(innerWidth/2,innerHeight/3,P.c);
  re.onclick=()=>{document.documentElement.style.removeProperty("--hero");document.documentElement.style.removeProperty("--hi");me={nama:"",kelas:""};order=pick();ans={};intro()};
@@ -293,5 +296,3 @@ function show(skor,d,saved){
 intro();
 
 </script>
-</body>
-</html> 
