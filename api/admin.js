@@ -1,10 +1,11 @@
 const crypto = require("crypto");
 const db = require("./_db");
 const h = s => crypto.createHash("sha256").update(String(s)).digest();
+// ====== PASSWORD ADMIN: ganti di baris satu-satunya ini, nggak perlu set env var di Vercel ======
+const ADMIN_PASSWORD = "kucing imut";
 module.exports = async (req, res) => {
-  const pw = process.env.ADMIN_PASSWORD;
-  if (!pw) return res.status(500).json({ error: "ADMIN_PASSWORD belum diatur di Vercel (Settings > Environment Variables). Tambahkan lalu Redeploy." });
-  if (!crypto.timingSafeEqual(h(req.headers["x-admin-password"] || ""), h(pw)))
+  if (!ADMIN_PASSWORD) return res.status(500).json({ error: "Password admin belum diatur di api/admin.js" });
+  if (!crypto.timingSafeEqual(h(req.headers["x-admin-password"] || ""), h(ADMIN_PASSWORD)))
     return res.status(401).json({ error: "Password salah" });
   try {
     if (req.method === "DELETE") {
@@ -17,4 +18,4 @@ module.exports = async (req, res) => {
     rows.sort((a, b) => b.waktu - a.waktu);
     res.status(200).json({ rows });
   } catch (e) { res.status(500).json({ error: e.message }); }
-};
+}; 
