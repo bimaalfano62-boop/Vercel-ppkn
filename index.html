@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tes Kepribadian Pancasila</title>
+<meta name="description" content="Cari tahu kamu paling condong ke sila yang mana.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇮🇩</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f5fb;--card:#fff;--ink:#1d1b3a;--mu:#6b6987;--ln:#e3e1f0;--ac:#8b5cf6;--ag:#2bb673;--hero:#8b5cf6;--hi:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#14132a;--card:#1f1e3a;--ink:#f1f0fb;--mu:#a3a1c4;--ln:#35335a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Figtree,system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+h1,h2,h3{font-family:"Bricolage Grotesque",Figtree,sans-serif;line-height:1.1;margin:0}
+.w{max-width:680px;margin:0 auto;padding:0 18px}
+.top{display:flex;align-items:center;gap:10px;padding:16px 0;font:800 18px "Bricolage Grotesque",sans-serif}
+.hero{padding:28px 0 8px}
+.hero h1{font-size:clamp(38px,9vw,60px);font-weight:800;letter-spacing:-1px}
+.hero p{color:var(--mu);max-width:46ch}
+.row5{display:flex;gap:4px;margin:20px 0 4px;flex-wrap:wrap}
+.row5 svg{width:19%;min-width:56px;height:auto}
+.card{background:var(--card);border:2px solid var(--ln);border-radius:24px;padding:22px;margin:18px 0}
+label{display:block;font-weight:600;margin:12px 0 6px}
+input{width:100%;font:inherit;padding:14px;border-radius:14px;border:2px solid var(--ln);background:var(--bg);color:var(--ink)}
+input:focus{outline:3px solid var(--ac);outline-offset:1px;border-color:transparent}
+.btn{font:700 17px "Bricolage Grotesque",sans-serif;background:var(--ink);color:var(--bg);border:0;border-radius:999px;padding:15px 30px;margin-top:20px;cursor:pointer}
+.btn:focus-visible{outline:3px solid var(--ac);outline-offset:3px}
+.btn[disabled]{opacity:.35;cursor:default}
+.err{color:#e63946;font-size:15px;min-height:22px;margin-top:8px}
+.prog{position:sticky;top:0;background:var(--bg);padding:12px 0 8px;z-index:2}
+.pt{height:10px;border-radius:9px;background:var(--ln);overflow:hidden}.pt i{display:block;height:100%;background:var(--ac);border-radius:9px;transition:width .3s}
+.q{padding:30px 0 10px;text-align:center;border-bottom:2px solid var(--ln)}
+.q p{font:600 21px/1.35 "Bricolage Grotesque",sans-serif;margin:0 auto 20px;max-width:30ch}
+.ch{display:flex;flex-direction:column;gap:8px;max-width:440px;margin:0 auto;text-align:left}
+.o{display:flex;align-items:center;gap:12px;width:100%;font:inherit;color:var(--ink);background:var(--card);border:2px solid var(--ln);border-radius:16px;padding:10px 14px;cursor:pointer;transition:border-color .12s,background .12s}
+.o b{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:800 16px "Bricolage Grotesque",sans-serif;background:var(--bg);border:2px solid var(--ln)}
+.o:hover{border-color:var(--ac)}
+.o.on{background:var(--ac);border-color:var(--ac);color:#fff}.o.on b{background:#fff;color:var(--ac);border-color:#fff}
+.o:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.q{text-align:left!important}.q p{text-align:center}
+.res{background:var(--hero);color:var(--hi);text-align:center;padding:30px 18px 44px;border-radius:0 0 40px 40px;animation:pop .5s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(14px)}}
+@media(prefers-reduced-motion:reduce){.res{animation:none}.o,.pt i{transition:none}}
+.res .who{opacity:.85;font-weight:600}
+.res h1{font-size:clamp(34px,9vw,54px);font-weight:800;margin:6px 0}
+.kode{display:inline-block;font:800 20px "Bricolage Grotesque",sans-serif;border:3px solid currentColor;border-radius:999px;padding:4px 18px;margin:8px 0 0}
+.bar{margin:14px 0}.bl{display:flex;justify-content:space-between;font-size:15px}
+.tr{height:16px;background:var(--ln);border-radius:9px;overflow:hidden;margin-top:4px}.tr i{display:block;height:100%;border-radius:9px}
+.sec h2{font-size:24px;margin:0 0 8px}.sec p{margin:0 0 10px}
+.mu{color:var(--mu);font-size:15px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script src="sila.js"></script>
+<script src="bank.js"></script>
+<script>
+const app=document.getElementById("app");
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+// 5 pernyataan acak dari tiap sila (25 bank) = 25 soal, lalu diacak urutannya
+const pick=()=>shuf(BANK.flatMap((_,i)=>shuf([...Array(25).keys()]).slice(0,5).map(k=>i*25+k)));
+let order=pick(),ans={},pg=0,me={nama:"",kelas:""};
+const PER=5,PAGES=order.length/PER,txt=id=>BANK[Math.floor(id/25)][id%25];
+
+function intro(err=""){
+ app.innerHTML=`<div class="w"><div class="top">🇮🇩 Tes Pancasila</div>
+ <div class="hero"><h1>Kamu condong ke sila yang mana?</h1>
+ <p>25 pernyataan singkat yang diacak untukmu, sekitar 4 menit. Pilih jawaban A sampai E. Tidak ada jawaban benar atau salah, jadi jawab sesuai dirimu yang sebenarnya.</p>
+ <div class="row5">${SILA.map((_,i)=>mascot(i)).join("")}</div></div>
+ <div class="card"><label for="nm">Nama lengkap</label><input id="nm" autocomplete="name" value="${esc(me.nama)}" placeholder="Contoh: Budi Santoso">
+ <label for="kl">Kelas</label><input id="kl" value="${esc(me.kelas)}" placeholder="Contoh: XI IPA 2">
+ <div class="err" id="er" role="alert">${err}</div><button class="btn" id="go">Mulai tes</button></div></div>`;
+ document.getElementById("go").onclick=()=>{const n=nm.value.trim(),k=kl.value.trim();
+  if(n.length<2||!k)return intro("Isi nama dan kelas dulu sebelum mulai.");
+  me={nama:n,kelas:k};pg=0;ans={};quiz()};
+}
+const OP=[["A","Sangat sesuai denganku",5],["B","Sesuai denganku",4],["C","Netral, kadang-kadang",3],["D","Kurang sesuai denganku",2],["E","Tidak sesuai denganku",1]];
+function quiz(){
+ const ids=order.slice(pg*PER,pg*PER+PER);
+ app.innerHTML=`<div class="w"><div class="prog"><div class="mu">Bagian ${pg+1} dari ${PAGES} · tidak ada jawaban benar atau salah</div><div class="pt"><i style="width:${pg/PAGES*100}%"></i></div></div>
+ ${ids.map(n=>`<div class="q"><p>${esc(txt(n))}</p><div class="ch" role="radiogroup" aria-label="Pilih satu jawaban">${OP.map(([l,t,v])=>`<button class="o ${ans[n]===v?"on":""}" role="radio" aria-checked="${ans[n]===v}" data-n="${n}" data-v="${v}"><b>${l}</b>${t}</button>`).join("")}</div></div>`).join("")}
+ <div style="text-align:center;padding-bottom:40px"><button class="btn" id="nx" ${ids.every(n=>ans[n])?"":"disabled"}>${pg===PAGES-1?"Lihat hasilku":"Lanjut"}</button><div class="err" id="er" role="alert"></div></div></div>`;
+ app.querySelectorAll(".o").forEach(b=>b.onclick=()=>{ans[b.dataset.n]=+b.dataset.v;
+  app.querySelectorAll(`.o[data-n="${b.dataset.n}"]`).forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-checked",on)});
+  nx.disabled=!ids.every(n=>ans[n])});
+ nx.onclick=()=>{if(pg<PAGES-1){pg++;quiz();scrollTo(0,0)}else finish()};
+ if(pg>0)scrollTo(0,0);
+}
+const LV=v=>v>=70?"Tinggi":v>=40?"Sedang":"Rendah";
+async function finish(){
+ const jawab=order.map(id=>[id,ans[id]]),sum=[0,0,0,0,0];
+ jawab.forEach(([id,v])=>sum[Math.floor(id/25)]+=v-1);
+ const skor=sum.map(v=>Math.round(v/20*100)),mx=Math.max(...skor),d=skor.map((v,i)=>v===mx?i:-1).filter(i=>i>=0);
+ nx.disabled=true;nx.textContent="Menyimpan…";
+ let saved=true;
+ try{const r=await fetch("/api/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...me,jawab})});saved=r.ok}catch(e){saved=false}
+ show(skor,d,saved);
+}
+function show(skor,d,saved){
+ const T=tipe(d,skor),P=SILA[T.p],S=SILA[T.s];
+ document.documentElement.style.setProperty("--hero",P.c);document.documentElement.style.setProperty("--hi",P.ink);
+ // alasan: pernyataan sila dominan yang paling kamu setujui
+ const top=order.filter(id=>Math.floor(id/25)===T.p).sort((a,b)=>ans[b]-ans[a]).slice(0,2);
+ const rank=skor.map((v,i)=>i).sort((a,b)=>skor[b]-skor[a]);
+ app.innerHTML=`<div class="res"><div class="who">${esc(me.nama)} · ${esc(me.kelas)}</div>${mascot(T.p,170)}<div class="who">Kamu adalah</div><h1>${esc(T.nama)}</h1><span class="kode">${T.kode}</span></div>
+ <div class="w"><div class="card sec"><h2>Skor kelima silamu</h2>${bars(skor)}</div>
+ <div class="card sec"><h2>Kenapa kamu dapat ${P.n}?</h2><p class="mu">${esc(P.t)}</p><p>${esc(P.d)}</p>
+ <p>Skormu di sila ini <b>${skor[T.p]}%</b>${d.length>1?" (sama tinggi dengan "+d.filter(x=>x!==T.p).map(x=>SILA[x].n).join(", ")+")":""}. Kamu paling setuju dengan:</p>
+ <ul>${top.map(id=>`<li>“${esc(txt(id))}”</li>`).join("")}</ul>
+ <p><b>Kekuatan:</b> ${esc(P.kuat)}</p><p><b>Tantangan:</b> ${esc(P.tantang)}</p>
+ <p><b>Sisi keduamu:</b> ${S.n} (${skor[T.s]}%). ${esc(S.d)}</p></div>
+ <h2 style="margin:26px 0 0;font-size:26px">Rincian tiap sila</h2>
+ ${rank.map(i=>`<div class="card sec"><div style="display:flex;gap:14px;align-items:center">${mascot(i,84)}<div><h3 style="font-size:21px">${SILA[i].arch}</h3><div class="mu">${SILA[i].n} · ${skor[i]}% · ${LV(skor[i])}</div></div></div>
+ <p style="margin-top:12px"><b>Maknanya:</b> ${esc(SILA[i].makna)}</p>
+ <p><b>Alasan:</b> ${esc(skor[i]>=70?SILA[i].hi:skor[i]>=40?SILA[i].mid:SILA[i].lo)}</p>
+ <p style="margin-bottom:4px"><b>Saran:</b></p><ul style="margin:0 0 4px;padding-left:20px">${SILA[i].sr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
+ <p class="mu" style="text-align:center">${saved?"Hasilmu sudah terkirim ke guru.":"Hasil belum tersimpan di server. Coba ulangi tes nanti."}</p>
+ <div style="text-align:center;padding-bottom:50px"><button class="btn" id="re">Ulangi tes</button></div></div>`;
+ scrollTo(0,0);
+ re.onclick=()=>{document.documentElement.style.removeProperty("--hero");document.documentElement.style.removeProperty("--hi");me={nama:"",kelas:""};order=pick();ans={};intro()};
+}
+intro();
+</script>
+</body>
+</html>
