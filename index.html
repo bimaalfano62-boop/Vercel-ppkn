@@ -258,16 +258,38 @@ addEventListener("keydown",e=>{const o=app.querySelectorAll(".op");if(!o.length|
  const i="abcde".indexOf(e.key.toLowerCase());if(i>=0&&e.key.length===1)o[i].click();
  else if((e.key==="ArrowLeft"||e.key==="Backspace")&&pg>0&&document.activeElement.tagName!=="INPUT"){pg--;quiz()}});
 const LV=v=>v>=70?"Tinggi":v>=40?"Sedang":"Rendah";
+// Penyimpanan cloud JSON gratisan tanpa akun (textdb.dev) — hasil bisa diakses guru dari device mana aja.
+// ID endpoint di bawah adalah "alamat data" lu — jangan disebar ke luar.
+const CLOUD="https://textdb.dev/api/data/ppkn-hasil-2cddc861f3f4678cf85af3c6";
+const LS_KEY="hasil_ppkn";
+async function cloudRead(){const r=await fetch(CLOUD);if(!r.ok)throw new Error("HTTP "+r.status);const t=await r.text();return JSON.parse(t.slice(t.indexOf("{"),t.lastIndexOf("}")+1))}
+async function cloudWrite(o){const w=await fetch(CLOUD,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(o)});if(!w.ok)throw new Error("HTTP "+w.status)}
+async function tryCloud(fn){for(let i=0;;i++){try{return await fn()}catch(e){if(i>=2)throw e;await new Promise(r=>setTimeout(r,900*(i+1)))}}}
+// Self-healing: hasil yang gagal terkirim (internet lemah dsb.) otomatis di-upload ulang saat situs dibuka lagi
+async function heal(){
+ let p=[];try{p=JSON.parse(localStorage.getItem(LS_KEY+"_pend")||"[]")}catch(e){}
+ if(!p.length)return;
+ try{const j=await tryCloud(cloudRead);j.hasil=j.hasil||[];
+  const bar=p.filter(x=>x&&x.id&&!j.hasil.some(h=>h.id===x.id));
+  if(bar.length){j.hasil.push(...bar);await tryCloud(()=>cloudWrite(j))}
+  localStorage.setItem(LS_KEY+"_pend","[]")}catch(e){}
+}
 async function finish(){
  const jawab=order.map(id=>[id,ans[id]]),sum=[0,0,0,0,0];
  jawab.forEach(([id,v])=>sum[Math.floor(id/25)]+=v-1);
  const skor=sum.map(v=>Math.round(v/20*100)),mx=Math.max(...skor),d=skor.map((v,i)=>v===mx?i:-1).filter(i=>i>=0);
  app.innerHTML='<div class="load">Menghitung hasilmu… 🎶</div>';
- // simpan ke localStorage browser perangkat ini (tanpa database / server)
+ const rec={id:Date.now()+"-"+Math.random().toString(36).slice(2,8),nama:me.nama,kelas:me.kelas,skor,dominan:d,waktu:Date.now(),jawab};
  let saved=true;
- try{const all=JSON.parse(localStorage.getItem("hasil_ppkn")||"[]");
-  all.push({id:Date.now()+"-"+Math.random().toString(36).slice(2,8),nama:me.nama,kelas:me.kelas,skor,dominan:d,waktu:Date.now(),jawab});
-  localStorage.setItem("hasil_ppkn",JSON.stringify(all))}catch(e){saved=false}
+ try{const j=await tryCloud(cloudRead);j.hasil=j.hasil||[];
+  let p=[];try{p=JSON.parse(localStorage.getItem(LS_KEY+"_pend")||"[]")}catch(e){}
+  const bar=p.filter(x=>x&&x.id&&!j.hasil.some(h=>h.id===x.id));
+  j.hasil.push(rec,...bar);
+  await tryCloud(()=>cloudWrite(j));
+  try{localStorage.setItem(LS_KEY+"_pend","[]")}catch(e){}}
+ catch(e){saved=false;
+  try{const p=JSON.parse(localStorage.getItem(LS_KEY+"_pend")||"[]");if(!p.some(x=>x.id===rec.id)){p.push(rec);localStorage.setItem(LS_KEY+"_pend",JSON.stringify(p))}}catch(_){}}
+ try{const all=JSON.parse(localStorage.getItem(LS_KEY)||"[]");all.push(rec);localStorage.setItem(LS_KEY,JSON.stringify(all))}catch(e){}
  show(skor,d,saved);
 }
 function show(skor,d,saved){
@@ -288,12 +310,12 @@ function show(skor,d,saved){
  <p style="margin-top:12px"><b>Maknanya:</b> ${esc(SILA[i].makna)}</p>
  <p><b>Alasan:</b> ${esc(skor[i]>=70?SILA[i].hi:skor[i]>=40?SILA[i].mid:SILA[i].lo)}</p>
  <p style="margin-bottom:4px"><b>Saran:</b></p><ul style="margin:0 0 4px;padding-left:20px">${SILA[i].sr.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
- <p class="mu" style="text-align:center">${saved?"Hasilmu sudah tersimpan di perangkat ini — screenshot buat bukti ke gurumu.":"Hasil belum bisa disimpan (penyimpanan browser penuh?). Coba ulangi tes nanti."}</p>
+ <p class="mu" style="text-align:center">${saved?"Hasilmu sudah terkirim ke guru 👍 (tersinkron di cloud).":"Gagal kirim ke cloud — hasilmu disimpan di perangkat ini saja. Screenshot buat bukti ke gurumu."}</p>
  <div style="text-align:center;padding-bottom:50px"><button class="btn" id="re">Ulangi tes</button></div></div>`;
  scrollTo(0,0);if(!RM)burst(innerWidth/2,innerHeight/3,P.c);
  re.onclick=()=>{document.documentElement.style.removeProperty("--hero");document.documentElement.style.removeProperty("--hi");me={nama:"",kelas:""};order=pick();ans={};intro()};
 }
-intro();
+intro();heal();
 
 </script>
 </body>
