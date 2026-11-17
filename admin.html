@@ -1,5 +1,4 @@
-HTML
-admin.html
+ew
 <!DOCTYPE html>
 <html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex"><title>Admin · Tes Pancasila</title>
@@ -51,13 +50,21 @@ function donut(cnt,total){
 const leg=(c,t)=>`<ul style="list-style:none;margin:0;padding:0;font-size:14px">${c.map((v,i)=>`<li style="display:flex;align-items:center;gap:8px;margin:7px 0"><span style="width:14px;height:14px;border-radius:4px;background:${SILA[i].c};display:inline-block;flex:none"></span>${SILA[i].n}${t?` — <b>${v}</b> org (${Math.round(v/t*100)}%)`:""}</li>`).join("")}</ul>`;
 
 // ===== Dashboard =====
+// Penyimpanan cloud JSON gratisan tanpa akun (textdb.dev) — data sinkron antar device.
+// ID endpoint di bawah adalah "alamat data" lu — jangan disebar ke luar. Harus sama dengan yang di index.html.
+const CLOUD="https://textdb.dev/api/data/ppkn-hasil-2cddc861f3f4678cf85af3c6";
 const LS_KEY="hasil_ppkn";
 const app=document.getElementById("app");
-let rows=[],flt="",q="",open_="";
-function loadRows(){
- try{ return JSON.parse(localStorage.getItem(LS_KEY)||"[]").sort((a,b)=>b.waktu-a.waktu) }catch(e){ return [] }
+let rows=[],flt="",q="",open_="",cloudOK=true;
+async function cloudRead(){const r=await fetch(CLOUD);if(!r.ok)throw new Error("HTTP "+r.status);const t=await r.text();return JSON.parse(t.slice(t.indexOf("{"),t.lastIndexOf("}")+1))}
+async function cloudWrite(o){const w=await fetch(CLOUD,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(o)});if(!w.ok)throw new Error("HTTP "+w.status)}
+async function tryCloud(fn){for(let i=0;;i++){try{return await fn()}catch(e){if(i>=2)throw e;await new Promise(r=>setTimeout(r,900*(i+1)))}}}
+function localAll(){try{ return JSON.parse(localStorage.getItem(LS_KEY)||"[]") }catch(e){ return [] }}
+function cacheLocal(){try{ localStorage.setItem(LS_KEY,JSON.stringify(rows)) }catch(e){}}
+async function loadCloud(){
+ try{const j=await tryCloud(cloudRead);rows=(j.hasil||[]).filter(r=>r&&r.id&&Array.isArray(r.skor)&&Array.isArray(r.dominan)).sort((a,b)=>b.waktu-a.waktu);cacheLocal();cloudOK=true}
+ catch(e){cloudOK=false;rows=localAll().sort((a,b)=>b.waktu-a.waktu)}
 }
-function saveRows(r){ try{ localStorage.setItem(LS_KEY,JSON.stringify(r)) }catch(e){ alert("Gagal menyimpan: penyimpanan browser penuh.") } }
 function dash(){
  const ks=[...new Set(rows.map(r=>r.kelas))].sort(),R=rows.filter(r=>(!flt||r.kelas===flt)&&r.nama.toLowerCase().includes(q.toLowerCase()));
  const KL=ks.map(k=>{const g=rows.filter(r=>r.kelas===k);return `<tr><td>${esc(k)}</td><td>${g.length}</td>${[0,1,2,3,4].map(i=>`<td>${Math.round(g.reduce((a,r)=>a+r.skor[i],0)/g.length)}</td>`).join("")}</tr>`}).join("");
@@ -67,21 +74,26 @@ function dash(){
  app.innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:14px"><h2 style="margin:0">Dashboard admin</h2><button id="rf2">Muat ulang</button></div>
  <div class="card row"><input id="s" placeholder="Cari nama peserta" value="${esc(q)}" aria-label="Cari nama"><select id="f" aria-label="Filter kelas"><option value="">Semua kelas</option>${ks.map(k=>`<option ${k===flt?"selected":""}>${esc(k)}</option>`).join("")}</select><button id="rf">Muat ulang</button><button class="p" id="csv">Unduh CSV</button></div>
  <div class="card row"><div class="st"><b>${R.length}</b>Responden</div><div class="st"><b>${top>=0?SILA[top].n:"-"}</b>Paling dominan</div></div>
- <p class="mu" style="margin:0 0 14px">ℹ️ Data tersimpan di browser perangkat ini saja. Hasil yang dikerjakan siswa di HP/PC lain nggak bakal muncul di sini — dari perangkat itu, buka halaman ini untuk lihat datanya.</p>
+ <p class="mu" style="margin:0 0 14px">${cloudOK?"✅ Data tersinkron di cloud — dashboard ini bisa dibuka dari device mana aja, isinya sama. Auto-refresh tiap 30 detik.":"⚠️ Gagal nyambung ke cloud — nampilin data cache perangkat ini. Cek koneksi lalu klik Muat ulang."}</p>
  <div class="card"><h2>📊 Diagram batang — rata-rata skor per sila</h2>${R.length?vbars(avg):'<p class="mu">Belum ada data untuk digrafik.</p>'}</div>
  <div class="card"><h2>🥧 Diagram lingkaran — sila dominan responden</h2><div class="row" style="justify-content:center">${R.length?donut(cntP,R.length)+`<div style="flex:1;min-width:220px">${leg(cntP,R.length)}</div>`:'<p class="mu">Belum ada data untuk digrafik.</p>'}</div></div>
  <div class="card sc"><h2>Ringkasan per kelas (rata-rata skor)</h2><table style="min-width:0"><tr><th>Kelas</th><th>Peserta</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th></tr>${KL||'<tr><td colspan="7" class="mu">Belum ada data.</td></tr>'}</table></div>
  <div class="card sc"><h2>Data peserta (klik baris untuk detail)</h2><table><tr><th>Nama</th><th>Kelas</th><th>Tipe</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th><th>Waktu</th><th></th></tr>
- ${R.map(r=>`<tr data-r="${r.id}" style="cursor:pointer"><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${tipe(r.dominan,r.skor).kode}</td>${r.skor.map(x=>`<td>${x}</td>`).join("")}<td>${new Date(r.waktu).toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"})}</td><td><button data-d="${r.id}" aria-label="Hapus ${esc(r.nama)}">Hapus</button></td></tr>${open_===r.id?`<tr><td colspan="10"><b>${esc(tipe(r.dominan,r.skor).nama)}</b> (${tipe(r.dominan,r.skor).kode})<br>Sila dominan: ${r.dominan.map(i=>SILA[i].n+" – "+SILA[i].t).join("; ")}<br>Urutan skor: ${r.skor.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).map(([v,i])=>SILA[i].n+" "+v+"%").join(" > ")}<br>Diisi: ${new Date(r.waktu).toLocaleString("id-ID",{dateStyle:"full",timeStyle:"short"})}</td></tr>`:""}`).join("")||'<tr><td colspan="10" class="mu">Belum ada data. Kerjakan tes dulu di perangkat ini, lalu klik "Muat ulang".</td></tr>'}</table></div>`;
+ ${R.map(r=>`<tr data-r="${r.id}" style="cursor:pointer"><td>${esc(r.nama)}</td><td>${esc(r.kelas)}</td><td>${tipe(r.dominan,r.skor).kode}</td>${r.skor.map(x=>`<td>${x}</td>`).join("")}<td>${new Date(r.waktu).toLocaleString("id-ID",{dateStyle:"short",timeStyle:"short"})}</td><td><button data-d="${r.id}" aria-label="Hapus ${esc(r.nama)}">Hapus</button></td></tr>${open_===r.id?`<tr><td colspan="10"><b>${esc(tipe(r.dominan,r.skor).nama)}</b> (${tipe(r.dominan,r.skor).kode})<br>Sila dominan: ${r.dominan.map(i=>SILA[i].n+" – "+SILA[i].t).join("; ")}<br>Urutan skor: ${r.skor.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]).map(([v,i])=>SILA[i].n+" "+v+"%").join(" > ")}<br>Diisi: ${new Date(r.waktu).toLocaleString("id-ID",{dateStyle:"full",timeStyle:"short"})}</td></tr>`:""}`).join("")||'<tr><td colspan="10" class="mu">Belum ada data. Kerjakan tes dulu, lalu klik "Muat ulang".</td></tr>'}</table></div>`;
  const f=document.getElementById("f"),s=document.getElementById("s"),rf=document.getElementById("rf"),rf2=document.getElementById("rf2"),csv=document.getElementById("csv");
  f.onchange=()=>{flt=f.value;dash()};
  s.oninput=()=>{q=s.value;dash();const e=document.getElementById("s");e.focus();e.setSelectionRange(q.length,q.length)};
  app.querySelectorAll("[data-r]").forEach(t=>t.onclick=e=>{if(e.target.closest("button"))return;open_=open_===t.dataset.r?"":t.dataset.r;dash()});
- rf.onclick=()=>{rows=loadRows();dash()};
- rf2.onclick=()=>{rows=loadRows();dash()};
+ rf.onclick=rf2.onclick=async()=>{await loadCloud();dash()};
  csv.onclick=()=>{const c=["Nama,Kelas,Tipe,Nama Tipe,S1,S2,S3,S4,S5,Waktu",...R.map(r=>{const t=tipe(r.dominan,r.skor);return[r.nama,r.kelas,t.kode,t.nama,...r.skor,new Date(r.waktu).toLocaleString("id-ID")].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")})].join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+c],{type:"text/csv"}));a.download="hasil-tes-pancasila.csv";a.click()};
- app.querySelectorAll("[data-d]").forEach(x=>x.onclick=()=>{if(confirm("Hapus data ini?")){rows=rows.filter(r=>r.id!==x.dataset.d);saveRows(rows);dash()}});
+ app.querySelectorAll("[data-d]").forEach(x=>x.onclick=async()=>{if(!confirm("Hapus data ini?"))return;
+  try{const j=await tryCloud(cloudRead);j.hasil=(j.hasil||[]).filter(r=>r.id!==x.dataset.d);await tryCloud(()=>cloudWrite(j));
+   rows=j.hasil.filter(r=>r&&r.id&&Array.isArray(r.skor)&&Array.isArray(r.dominan)).sort((a,b)=>b.waktu-a.waktu);cacheLocal();cloudOK=true}
+  catch(e){alert("Gagal hapus di cloud: "+e.message);return}
+  dash()});
 }
-rows=loadRows();dash();
+app.innerHTML='<div class="card" style="max-width:420px;margin:12vh auto"><p class="mu" style="margin:0">Memuat data dari cloud…</p></div>';
+loadCloud().then(dash);
+setInterval(()=>loadCloud().then(dash),30000);
 </script></body></html> 
